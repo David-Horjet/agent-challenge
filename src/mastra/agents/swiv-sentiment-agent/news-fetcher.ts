@@ -1,22 +1,20 @@
-// market-news-tool.ts
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 
-export const marketNewsTool = createTool({
-  id: "marketNews",
-  description: "Fetch recent market headlines for a token",
+export const newsFetcherTool = createTool({
+  id: "newsFetcher",
+  description: "Fetch recent token-related headlines",
   inputSchema: z.object({
-    tokenSymbol: z.string().describe("e.g., ETH, BTC, SOL"),
+    tokenSymbol: z.string(),
   }),
   outputSchema: z.object({
     headlines: z.array(z.string()),
   }),
   execute: async ({ context }) => {
-    const { tokenSymbol } = context;
-    const tokenId = toId(tokenSymbol);
+    const id = toId(context.tokenSymbol);
 
     const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${tokenId}/status_updates`
+      `https://api.coingecko.com/api/v3/coins/${id}/status_updates`
     );
     const data = await res.json();
 
@@ -33,8 +31,6 @@ function toId(symbol: string): string {
     ETH: "ethereum",
     BTC: "bitcoin",
     SOL: "solana",
-    ARB: "arbitrum",
-    OP: "optimism",
   };
   return map[symbol.toUpperCase()] || symbol.toLowerCase();
 }
